@@ -53,6 +53,12 @@ class User extends Authenticatable
         ];
     }
 
+
+    //relationShip: user hasMany Adoption
+    public function adoptions(){
+        return $this->hasMany(Adoption::class);
+    }
+
     /**
      * Get the user's initials
      */

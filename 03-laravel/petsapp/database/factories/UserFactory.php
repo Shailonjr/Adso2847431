@@ -23,22 +23,23 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-
-        $gender = fake()->randomElement(['male','female']);
-           
-
-        $gender == 'male' ? $nombre=fake()->firstNameMale(): $nombre=fake()->firstNameFemale();
-
+        $gender = fake()->randomElement(array('Female', 'Male'));
+        $name = ($gender == 'Female') ? $name = fake() -> firstNameFemale() 
+                                      : $name = fake() -> firstNameMale();
+        ($gender == 'Female') ? $g = 'girl' : $g = 'boy';
+        $id = fake()->numerify('75######');
+        copy('https://avatar.iran.liara.run/public/'.$g, public_path('images/'.$id.'.png'));
         return [
-            'document' => fake()->unique()->randomNumber(8, true),
-            'fullname' => $nombre .' '.fake()->lastName(),
-            'gender' => $gender,
-            'birthdate' => fake()->date(),
-            'phone' => fake()->numerify('310#######'),
+            'document' => $id,
+            'fullname' => $name. " " .fake()->lastName(),
+            'gender'=>  $gender,
+            'birthdate' => fake()->dateTimeBetween('1974-01-01','2004-12-31'),
+            'photo' => $id.'.png',
             'email' => fake()->unique()->safeEmail(),
-            'password' => bcrypt('1234'), // Contraseña fija en 1234
-            'created_at' => now(),
-            'updated_at' => now(),
+            'phone' => fake()->numerify('320######'),
+            'email_verified_at' => now(),
+            'password' => static:: $password ??= Hash::make('12345'),
+            'remember_token' => Str::random(10)
         ];
     }
 
