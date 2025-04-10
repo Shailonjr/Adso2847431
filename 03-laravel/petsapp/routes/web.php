@@ -1,26 +1,22 @@
 <?php
 
-use Illuminate\Support\Facades\App;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\App;
 use Livewire\Volt\Volt;
 use App\Models\User as User;
 use App\Models\Pet as Pet;
-use Illuminate\Support\Carbon;
-
-
-use function Livewire\Volt\title;
+use illuminate\Support\Carbon;
 
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
-
 //list all users (Factory challenge
 Route::get('show/users', function () {
     $users = User::all();
    //d($users->toArray());
     return view('users-factory')->with('users', $users);
 });
-
 Route::get('hello', function(){
     return "<h1>Hello Laravel</h1>";
 })->name('hello');
@@ -30,6 +26,10 @@ Route::get('show/pets', function(){
     //var_dump($pets->toArray());
     dd($pets->toArray());
 });
+Route::get('pets/{id}', function($id) {
+    $pet = Pet::findOrFail($id);
+    return view('pet-details')->with('pet', $pet);
+})->name('pets.show');
 
 Route::get('user/list', function(){
     $users = User::take(20)->get();
@@ -43,29 +43,37 @@ Route::get('user/list', function(){
     </tr>";
 
     foreach($users as $user){
-        $code .= ($user->id%2 == 0) ?"<tr style='background: #ddd'>":"<tr>";
-        $code .= "<td style= 'border: 1px solid gray; padding: 0.4rem'>".$user->id."</td>";
-        $code .= "<td style= 'border: 1px solid gray; padding: 0.4rem'>".$user->fullname."</td>";
-        $code .= "<td style= 'border: 1px solid gray; padding: 0.4rem'>".Carbon::parse($user->birthdate)->age." years old</td>";
-        $code .= "<td style= 'border: 1px solid gray; padding: 0.4rem'>".$user->created_at->diffForHumans()."</td>";
+        $code .= ($user->id%2 == 0) ? "<tr style='background: #ccc'>":"<tr>";
+        $code .= "<td style='border: 1px solid gray; padding: 0.4rem'>".$user->id."</td>";
+        $code .= "<td style='border: 1px solid gray; padding: 0.4rem'>".$user->fullname."</td>";
+        $code .= "<td style='border: 1px solid gray; padding: 0.4rem'>".Carbon::parse($user->birthdate)->age." years old</td>";
+        $code .= "<td style='border: 1px solid gray; padding: 0.4rem'>".$user->created_at->diffForHumans()."</td>";
         $code .= "</tr>";
     }
-    return $code . "</table>";
-    
+    return $code .= "</table>";
 });
 
-Route::get('view/blade', function(){
-    $title = "Example Blade";
+route::get('view/blade', function(){
+    $title = "examples blade";
     $pets = Pet::whereIn('kind', ['dog', 'cat'])->get();
-    return view('example-view')->with('title', $title)
-    ->with('pets', $pets);
+
+
+    return view('example-view')
+        ->with('title', $title)
+        ->with('pets', $pets);
+
+});
+
+route::get('show/pet/{id}', function(){
+    $pet = pet::find(request()->id);
+    return view('show-pet')->with('pet', $pet);
 });
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware('auth')->group(function () {
     Route::redirect('settings', 'settings/profile');
 
     Volt::route('settings/profile', 'settings.profile')->name('settings.profile');
