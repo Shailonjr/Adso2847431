@@ -1,12 +1,38 @@
 <x-guest-layout>
     <form method="POST" action="{{ route('register') }}">
         @csrf
-
-        <!-- Name -->
+        <!-- Document -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            <x-input-label for="Document" :value="__('Document')" />
+            <x-text-input id="Document" class="block mt-1 w-full" type="text" name="Document" :value="old('Document')" required autofocus autocomplete="Document" />
+            <x-input-error :messages="$errors->get('Document')" class="mt-2" />
+        </div>
+        <!-- FullName -->
+        <div>
+            <x-input-label for="FullName" :value="__('FullName')" />
+            <x-text-input id="FullName" class="block mt-1 w-full" type="text" name="FullName" :value="old('FullName')" required autofocus autocomplete="FullName" />
+            <x-input-error :messages="$errors->get('FullName')" class="mt-2" />
+        </div>
+
+        <!-- Gender -->
+        <div>
+            <x-input-label for="Gender" :value="__('Gender')" />
+            <x-text-input id="Gender" class="block mt-1 w-full" type="text" name="Gender" :value="old('Gender')" required autofocus autocomplete="Gender" />
+            <x-input-error :messages="$errors->get('Gender')" class="mt-2" />
+        </div>
+
+        <!-- BirthDate -->
+        <div>
+            <x-input-label for="BirthDate" :value="__('BirthDate')" />
+            <x-text-input id="BirthDate" class="block mt-1 w-full" type="text" name="BirthDate" :value="old('BirthDate')" required autofocus autocomplete="BirthDate" />
+            <x-input-error :messages="$errors->get('BirthDate')" class="mt-2" />
+        </div>
+
+        <!-- Phone -->
+        <div>
+            <x-input-label for="Phone" :value="__('Phone')" />
+            <x-text-input id="Phone" class="block mt-1 w-full" type="text" name="Phone" :value="old('Phone')" required autofocus autocomplete="Phone" />
+            <x-input-error :messages="$errors->get('Phone')" class="mt-2" />
         </div>
 
         <!-- Email Address -->
@@ -39,14 +65,11 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-primary-button class="ms-4">
+        <div class="mx-auto flex justify-center items-center"  >
+            <x-primary-button class="ms-4" >
                 {{ __('Register') }}
             </x-primary-button>
+        </div>
         </div>
     </form>
 </x-guest-layout>
