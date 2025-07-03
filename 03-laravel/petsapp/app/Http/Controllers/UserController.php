@@ -13,11 +13,11 @@ class UserController extends Controller
     public function index()
     {
         //$users = User::all();
-        $users = User::paginate(10);
-        //$users = User::simplePaginate(10);
-        //dd($users->toArray()); //Dump & Die
-        return view('users.index')->with('users', $users);
+        $users = User::paginate(5);
+        return view('users.index', compact('users'));
     }
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -33,44 +33,44 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'document'  => ['required', 'numeric', 'unique:'.User::class],
-            'fullname'  => ['required', 'string'],
-            'gender'    => ['required'],
+            'document' => ['required', 'numeric', 'unique:users,document'],
+            'fullname' => ['required', 'string'],
+            'gender' => ['required'],
             'birthdate' => ['required', 'date'],
-            'photo'     => ['required', 'image'],
-            'phone'     => ['required'],
-            'email'     => ['required', 'lowercase', 'email', 'unique:'.User::class],
-            'password'  => ['required', 'confirmed', 'min:4']
+            'photo' => ['required', 'image'],
+            'phone' => ['required'],
+            'email' => ['required', 'lowercase', 'email', 'unique:users,email'],
+            'password' => ['required', 'confirmed', 'min:4'],
         ]);
 
-        if ($validated){
-            //dd($request->all());
-            if($request->hasFile('photo')){
-                $photo = time().'.'.$request->photo->extension();
-                $request->photo->move(public_path('images'), $photo);
-            }
-            $user = new User;
-            $user->document = $request->document;
-            $user->fullname = $request->fullname;
-            $user->gender = $request->gender;
-            $user->birthdate = $request->birthdate;
-            $user->photo = $photo;
-            $user->phone = $request->phone;
-            $user->email = $request->email;
-            $user->password = bcrypt($request->password);
+        $photo = null;
 
-            if($user->save()){
-                return redirect('users')->with('message','The use:'.$user->fullname.'was successfully added');
+        if ($request->hasFile('photo')) {
+            $photo = time() . '.' . $request->photo->extension();
+            $request->photo->move(public_path('images'), $photo);
+        }
+
+        $user = new User;
+        $user->document = $request->document;
+        $user->fullname = $request->fullname;
+        $user->gender = $request->gender;
+        $user->birthdate = $request->birthdate;
+        $user->photo = $photo;
+        $user->phone = $request->phone;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+
+        if ($user->save()) {
+            return redirect('users')->with('message', 'The user: ' . $user->fullname . ' was successfully added!');
         }
     }
-}
 
     /**
      * Display the specified resource.
      */
     public function show(User $user)
     {
-        //dd($user->toArray());
+        // dd($user->toArray());
         return view('users.show')->with('user', $user);
     }
 
@@ -79,15 +79,51 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        //
+        return view('users.edit', compact('user'));
     }
+
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, User $user)
     {
-        //
+        $validated = $request->validate([
+            'document' => ['required', 'numeric', 'unique:users,document,' . $user->id],
+            'fullname' => ['required', 'string'],
+            'gender' => ['required'],
+            'birthdate' => ['required', 'date'],
+            'photo' => ['nullable', 'image'],
+            'phone' => ['required'],
+            'email' => ['required', 'lowercase', 'email', 'unique:users,email,' . $user->id],
+            'password' => ['nullable', 'confirmed', 'min:4'],
+        ]);
+
+        // Si se subió nueva foto, reemplazar
+        if ($request->hasFile('photo')) {
+            if ($user->photo && file_exists(public_path('images/' . $user->photo))) {
+                unlink(public_path('images/' . $user->photo));
+            }
+            $filename = time() . '.' . $request->photo->extension();
+            $request->photo->move(public_path('images'), $filename);
+            $user->photo = $filename;
+        }
+
+        // Resto de campos
+        $user->document = $request->document;
+        $user->fullname = $request->fullname;
+        $user->gender = $request->gender;
+        $user->birthdate = $request->birthdate;
+        $user->phone = $request->phone;
+        $user->email = $request->email;
+
+        if ($request->filled('password')) {
+            $user->password = bcrypt($request->password);
+        }
+
+        $user->save();
+
+        return redirect()->route('users.index')->with('message', 'Usuario actualizado correctamente');
     }
 
     /**
@@ -95,6 +131,14 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        $user->delete();
+
+        return redirect()->route('users.index')->with('message', 'User deleted successfully!');
     }
+    public function search(Request $request){
+              $users = User::names($request->q)->paginate(10);
+              return view('users.search')->with('users',$users);
+            }
+
+
 }

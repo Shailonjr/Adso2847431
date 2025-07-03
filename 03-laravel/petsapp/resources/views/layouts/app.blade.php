@@ -15,7 +15,7 @@
         @theme {
             --breakpoint-xs: 30rem;
         }
-    </script>
+    </script> 
      @yield('js')
     </body>
 </html>

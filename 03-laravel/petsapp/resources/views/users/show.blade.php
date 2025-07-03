@@ -20,9 +20,13 @@
         </ul>
     </div>
     <ul class="list my-8 bg-base-100 rounded-box shadow-md w-4/12">
-
-    </ul>
-
+        <li class="list-row mx-auto">
+        <div class="avatar">
+            <div class="mask mask-squircle w-48 hover:scale-110 transition-transform">
+                <img src="{{ asset('images/'.$user->photo) }}" />
+            </div>
+        </div> 
+    </li>
     <ul class="list bg-base-100 rounded-box shadow-md">
         <li class="list-row">
             <div class="flex items-center gap-3 p-4">
@@ -66,5 +70,8 @@
             </div>
         </li>
     </ul>
+    </ul>
+
+    
 
 @endsection
